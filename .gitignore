@@ -35,6 +35,9 @@ jspm_packages/
 # Output of 'npm pack'
 *.tgz
 
+# Node.js dependencies
+node_modules/
+
 # dotenv environment variables file
 .env
 
