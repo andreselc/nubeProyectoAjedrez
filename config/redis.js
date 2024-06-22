@@ -1,15 +1,19 @@
+// redis.js
 const redis = require("redis");
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+    socket: {
+        port: 6379
+    }
+});
 
 const connectToRedis = () => {
     return new Promise((resolve, reject) => {
-        redisClient.on("connect", () => {
-            console.log("Connected to Redis...");
+        redisClient.connect().then(() => {
+            console.log("Conectado a Redis...");
             resolve();
-        });
-        redisClient.on("error", (err) => {
-            console.error("Error connecting to Redis:", err);
+        }).catch((err) => {
+            console.error("Error conectando a Redis:", err);
             reject(err);
         });
     });
