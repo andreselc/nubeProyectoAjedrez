@@ -56,7 +56,7 @@ exports.register = (req, res) => {
                     }
 
                     if (result.length === 0) {
-                        return res.status(500).json({error: "Algo está mal"});
+                        res.redirect("/?success=Algo salió mal!");
                     }
                     
                     let userId = result[0].id;
@@ -75,6 +75,7 @@ exports.register = (req, res) => {
                     res.cookie("user_points", 1000, {maxAge: 1000*60*60*24*30, httpOnly: true, secure: false, sameSite : "strict"});
                     
                     res.redirect("/?success=Te has registrado exitosamente");
+                   
                     })
             })
         })
@@ -82,6 +83,6 @@ exports.register = (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({error: err.message});
+        res.redirect("/?success=Algo salió mal!");
     }
 };
