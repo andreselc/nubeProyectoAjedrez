@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const db = require("./config/db");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 const { connectToRedis, redisClient } = require("./config/redis");
 
 const main = async () => {
@@ -27,6 +28,7 @@ const main = async () => {
     const value = await redisClient.get('my_key');
     await redisClient.del('my_key'); 
 
+    app.use(cookieParser("secret"));
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
     app.use(express.static(path.join(__dirname, "public")));
