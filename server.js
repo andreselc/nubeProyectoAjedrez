@@ -5,6 +5,7 @@ const path = require("path");
 const { connectToRedis, redisClient } = require("./config/redis");
 
 const main = async () => {
+    const viewsRoutes = require("./routes/views");
     const app = express();
 
     db.connect(err => {
@@ -32,9 +33,7 @@ const main = async () => {
     app.use(express.json());
     app.use(express.urlencoded({extended:true}))
 
-    app.get("/", (req, res) => {
-        res.render("index")
-    });
+    app.use("/",viewsRoutes);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Servidor ejecutándose en http://localhost:${PORT}`));
