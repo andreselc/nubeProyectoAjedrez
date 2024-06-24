@@ -14,20 +14,20 @@ exports.register = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.redirect("/register/error=" + errors.array()[0].msg);
+      return res.redirect("/register?error=" + errors.array()[0].msg);
     }
 
     const { username, email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
-      return res.redirect("/register/error=Passwords do not match");
+      return res.redirect("/register?error=Passwords do not match");
     }
 
     // Verificar si el usuario o email ya existen
     const existingUser = await userRepository.findByUsernameOrEmail(username, email);
 
     if (existingUser) {
-      return res.redirect("/register/error=Username or email already in use");
+      return res.redirect("/register?error=Username or email already in use");
     }
 
     // Encriptar la contraseña
@@ -80,6 +80,77 @@ exports.register = async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.redirect("/?error=Algo salió mal!");
+    res.redirect("/register?error=Algo salió mal!");
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.redirect("/login?error=" + errors.array()[0].msg);
+    }
+
+    const { email, password } = req.body;
+
+    const user = await userRepository.findByEmail(email);
+
+    if (!user) {
+      return res.redirect("/login?error=Email o password incorrectos");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.redirect("/login?error=Email o password incorrectos");
+    }
+
+    const userInfo = await userRepository.findUserInfoByUserId(user.id);
+
+    if (!userInfo) {
+      return res.redirect("/login?error=No se pudo recuperar la información del usuario");
+    }
+
+    const payload = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, async (err, token) => {
+      if (err) {
+        throw err;
+      }
+
+      // Guardar el token en Redis (opcional)
+      //await redisClient.set(`token:${user.id}`, token, 'EX', 3600);
+
+      // Configurar las cookies
+      res.cookie("token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict"
+      });
+      res.cookie("user_rank", userInfo.user_rank, {
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict"
+      });
+      res.cookie("user_points", userInfo.user_points, {
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict"
+      });
+
+      res.redirect("/?success=Te has logeado exitosamente");
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.redirect("/login?error=Algo salió mal!");
   }
 };

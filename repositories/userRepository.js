@@ -13,6 +13,24 @@ class UserRepository {
     });
   }
 
+
+  async findByEmail(email) {
+    return User.findOne({
+      where: {
+           email: email 
+      }
+    });
+  }
+
+
+  async findUserInfoByUserId(userId) {
+    return UserInfo.findOne({
+      where: {
+        user_id: userId
+      }
+    });
+  }
+
   async createUser(userData) {
     const user = await User.create(userData);
     await UserInfo.create({
