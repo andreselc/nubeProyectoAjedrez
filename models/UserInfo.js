@@ -1,16 +1,16 @@
-'use strict';
-const { Model } = require('sequelize');
-
+// models/userInfo.js
 module.exports = (sequelize, DataTypes) => {
-  class UserInfo extends Model {
-    static associate(models) {
-      UserInfo.belongsTo(models.User, {
-        foreignKey: 'user_id',
-        onDelete: 'CASCADE'
-      });
-    }
-  }
-  UserInfo.init({
+  const UserInfo = sequelize.define('UserInfo', {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'User',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
+      primaryKey: true
+    },
     user_rank: {
       type: DataTypes.ENUM('beginner', 'intermediate', 'advanced', 'expert'),
       defaultValue: 'beginner'
@@ -20,9 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 1000
     }
   }, {
-    sequelize,
-    modelName: 'UserInfo',
-    tableName: 'user_info',
+    tableName: 'user_info'
   });
+
+  UserInfo.associate = function(models) {
+    UserInfo.belongsTo(models.User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+  };
+
   return UserInfo;
 };
