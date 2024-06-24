@@ -1,6 +1,8 @@
 <%- include('../include/header')%>
 
 <div class="container">
+    <%- include('../include/partials/responseMessage')%>
+
     <form action="/api/register" method="POST" class="flex-center-colum auth-form">
         <h1 class="flex-center-colum">Register <img src="/assets/icons/user-plus.svg" alt="User"></h1>
         
@@ -29,4 +31,5 @@
     </form>
 </div>
 
+<script src="js/responseMessage.js"> </script>
 <%- include('../include/footer')%>
