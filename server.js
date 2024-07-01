@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const db = require("./config/db");
 const path = require("path");
+const http = require("http")
+const socketIO = require("socket.io")
 const cookieParser = require("cookie-parser");
 const { connectToRedis, redisClient } = require("./config/redis");
 
@@ -9,6 +11,8 @@ const main = async () => {
     const viewsRoutes = require("./routes/views");
     const userRoutes = require("./routes/api/user");
     const app = express();
+
+    const server = http.createServer(app)
 
     db.connect(err => {
         if (err) {
@@ -39,8 +43,17 @@ const main = async () => {
     app.use("/",viewsRoutes);
     app.use("/api",userRoutes);
 
+    const io = socketIO(server);
+    io.on("connection", (socket) =>{
+        socket.on("hello", (name) => {
+            console.log("Hello " + name);
+
+            socket.emit("hello", name);
+        })
+    })
+
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Servidor ejecutándose en http://localhost:${PORT}`));
+    server.listen(PORT, () => console.log(`Servidor ejecutándose en http://localhost:${PORT}`));
 };
 
 main();
