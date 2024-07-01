@@ -24,9 +24,9 @@ const fetchUserCallBack = (data) => {
     rank.innerText = user.user_rank;
     points.innerText = user.user_points;
 
-    // TODO: Esconder Spinner
-
     console.log(user);
+
+    hideSpinner();
 }
 
 fetchData('/api/user-info', fetchUserCallBack);
