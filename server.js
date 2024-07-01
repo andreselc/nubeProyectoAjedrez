@@ -45,11 +45,7 @@ const main = async () => {
 
     const io = socketIO(server);
     io.on("connection", (socket) =>{
-        socket.on("hello", (name) => {
-            console.log("Hello " + name);
 
-            socket.emit("hello", name);
-        })
     })
 
     const PORT = process.env.PORT || 5000;
