@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const userRepository = require('../../repositories/userRepository');
 const { validationResult } = require('express-validator');
 const redisClient = require("../../config/redis");
+
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -47,7 +48,7 @@ exports.register = async (req, res) => {
       email: newUser.email,
     };
 
-    jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, async (err, token) => {
+    jwt.sign(payload, jwtSecret, { expiresIn: '7d' }, async (err, token) => {
       if (err) {
         throw err;
       }
@@ -118,7 +119,7 @@ exports.login = async (req, res) => {
       email: user.email,
     };
 
-    jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, async (err, token) => {
+    jwt.sign(payload, jwtSecret, { expiresIn: '7d' }, async (err, token) => {
       if (err) {
         throw err;
       }
@@ -154,3 +155,27 @@ exports.login = async (req, res) => {
     res.redirect("/login?error=Algo salió mal!");
   }
 };
+
+exports.getInfo = (req, res) => {
+  try {
+    jwt.verify(req.cookies.token, jwtSecret, (err, userPayload) => {
+      if(err) throw err;
+
+      const {id, email, username} = userPayload
+
+      let user = {
+        id,
+        username,
+        email,
+        user_rank: req.cookies.user_rank,
+        user_points: req.cookies.user_points
+      }
+
+      return res.json(user);
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({error: err.message});
+  }
+}
+
