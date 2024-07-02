@@ -89,6 +89,15 @@ const main = async () => {
             })
         })
 
+        socket.on("send-message", (message, user, roomId=null) => {
+            if(roomId){
+                socket.to(roomId).emit("receive-message", message, user);
+            }else{
+                socket.broadcast.emit("receive-message", message, user, true);
+            }
+        })
+
+
         socket.on("disconnect", () => {
             let socketId = socket.id;
 
