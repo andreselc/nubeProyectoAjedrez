@@ -19,14 +19,14 @@ const fetchUserCallBack = (data) => {
     
     socket.emit('send-total-rooms-and-users');
 
+    hideSpinner();
+
     lobby.classList.remove("hidden");
     username.innerText = user.username;
     rank.innerText = user.user_rank;
     points.innerText = user.user_points;
 
     console.log(user);
-
-    hideSpinner();
 }
 
 fetchData('/api/user-info', fetchUserCallBack);
