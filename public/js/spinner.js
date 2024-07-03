@@ -1,4 +1,4 @@
-const spinner = document.getElementById("spinner")
+const spinner = document.getElementById("spinner");
 
 const showSpinner = () => {
     spinner.classList.remove("hidden");

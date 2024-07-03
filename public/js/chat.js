@@ -8,15 +8,16 @@ const messageInput = document.getElementById("message-input");
 
 // Funciones 
 const displayMessage = message => {
-    messages.innerHTML +=
-    <li class="message">
-        <span class="time">${message.created_at}</span>
+    messages.innerHTML += `
+        <li class="message">
+            <span class="time">${message.created_at}</span>
 
-        <p>
-            <strong>${message.user}:</strong> ${message.text}
-        </p>
+            <p>
+                <strong>${message.user}:</strong> ${message.text}
+            </p>
 
-    </li>
+        </li>
+    `;
 }
 
 const handleSubmit = (e) => {
@@ -29,7 +30,7 @@ const handleSubmit = (e) => {
     let message = {
         text,
         user: user.username,
-        created_at: '${date.getDate() + 1}/$(date.getMonth() + 1)/${date.getFullYear} ${date.getHours()}:${date.getMinutes()}'
+        created_at: `${date.getDate() + 1}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
     }
 
     messageInput.value = "";
@@ -37,9 +38,9 @@ const handleSubmit = (e) => {
     displayMessage(message);
 
     if(typeof roomId != 'undefined'){
-        Socket.emit('send-message', text, user.username, roomId);
+        socket.emit('send-message', text, user.username, roomId);
     }else{
-        Socket.emit('send-message', text, user.username);
+        socket.emit('send-message', text, user.username);
     }
 }
 
@@ -54,7 +55,7 @@ closeChatBtn.addEventListener("click", () => {
 
 chatForm.addEventListener("submit", handleSubmit);
 
-Socket.on("receive-message", (text, user, toEveryone=false) => {
+socket.on("receive-message", (text, user, toEveryone=false) => {
     if(typeof roomId !== "undefined" && toEveryone){
         return;
     }
@@ -64,7 +65,7 @@ Socket.on("receive-message", (text, user, toEveryone=false) => {
     let message = {
         text, 
         user,
-        created_at: '${date.getDate() + 1}/$(date.getMonth() + 1)/${date.getFullYear} ${date.getHours()}:${date.getMinutes()}'
+        created_at: `${date.getDate() + 1}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
     }
 
     displayMessage(message);

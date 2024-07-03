@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
       email: newUser.email,
     };
 
-    jwt.sign(payload, jwtSecret, { expiresIn: '7d' }, async (err, token) => {
+    jwt.sign(payload, jwtSecret, { expiresIn: '300d' }, async (err, token) => {
       if (err) {
         throw err;
       }
@@ -119,7 +119,7 @@ exports.login = async (req, res) => {
       email: user.email,
     };
 
-    jwt.sign(payload, jwtSecret, { expiresIn: '7d' }, async (err, token) => {
+    jwt.sign(payload, jwtSecret, { expiresIn: '300d' }, async (err, token) => {
       if (err) {
         throw err;
       }
@@ -156,7 +156,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getInfo = (req, res) => {
+exports.getInfo = async (req, res) => {
   try {
     jwt.verify(req.cookies.token, jwtSecret, (err, userPayload) => {
       if(err) throw err;

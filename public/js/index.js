@@ -1,10 +1,10 @@
 const socket = io();
 
-const fetchData = (url,  callback) => {
+const fetchData = (url, callback) => {
     fetch(url)
     .then(res => {
         if(!res.ok){
-            throw Error("Algo fallo");
+            throw Error("Algo Falló :c");
         }
 
         return res.json();

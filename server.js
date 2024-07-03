@@ -50,19 +50,18 @@ const main = async () => {
     io.on("connection", (socket) =>{
         socket.on('user-connected', (user, roomId=null) => {
             if(roomId){
-                // TODO: ingresar con id a la sala
+                // TODO: Ingresar a sala con el ID
             }else{
                 newUser(socket.id, user);
             }
         })
-
         socket.on('send-total-rooms-and-users', () => {
             redisClient.get('total-users', (err, reply) => {
                 if(err) throw err;
 
                 let totalUsers = 0;
                 let totalRooms = 0;
-                let numberOfRooms = [0, 0, 0, 0];
+                let numberOfRooms = [0,0,0,0];
 
                 if(reply){
                     totalUsers = parseInt(reply);
@@ -72,20 +71,19 @@ const main = async () => {
                     if(err) throw err;
 
                     if(reply){
-                        totalUsers = parseInt(reply);
+                        totalRooms = parseInt(reply);
                     }
 
                     redisClient.get('number-of-rooms', (err, reply) => {
                         if(err) throw err;
-        
+
                         if(reply){
                             numberOfRooms = JSON.parse(reply);
                         }
-                        
-                        socket.emit('receive-number-of-rooms-and-users', numberOfRooms, totalRooms, totalUsers);
+
+                        socket.emit('receive-total-rooms-and-users', numberOfRooms, totalRooms, totalUsers);
                     })
                 })
-
             })
         })
 
@@ -97,7 +95,6 @@ const main = async () => {
             }
         })
 
-
         socket.on("disconnect", () => {
             let socketId = socket.id;
 
@@ -108,14 +105,13 @@ const main = async () => {
                     let user = JSON.parse(reply);
 
                     if(user.room){
-                        // TODO: Sacar al usuarios o usuario de la sala
+                        // TODO:
                     }
                 }
             })
 
             removeUser(socketId);
         })
-
     })
 
     const PORT = process.env.PORT || 5000;
