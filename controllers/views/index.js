@@ -1,6 +1,6 @@
 exports.getRegisterPage = (req, res) => {
     if(req.cookies.token){
-        return res.redirect("/")
+        return res.redirect("/");
     }
 
     res.render('auth/register');
@@ -8,7 +8,7 @@ exports.getRegisterPage = (req, res) => {
 
 exports.getLoginPage = (req, res) => {
     if(req.cookies.token){
-        return res.redirect("/")
+        return res.redirect("/");
     }
 
     res.render('auth/login');
@@ -16,8 +16,8 @@ exports.getLoginPage = (req, res) => {
 
 exports.getLobbyPage = (req, res) => {
     if(!req.cookies.token){
-        return res.redirect("/login")
+        return res.redirect("/login");
     }
 
     res.render("lobby");
-}
+};

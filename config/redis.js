@@ -1,4 +1,3 @@
-// redis.js
 const redis = require('redis');
 
 const redisClient = redis.createClient({
@@ -7,16 +6,13 @@ const redisClient = redis.createClient({
     }
 });
 
-const connectToRedis = () => {
-    return new Promise((resolve, reject) => {
-        redisClient.connect().then(() => {
-            console.log("Conectado a Redis...");
-            resolve();
-        }).catch((err) => {
-            console.error("Error conectando a Redis:", err);
-            reject(err);
-        });
-    });
+const connectToRedis = async () => {
+    try {
+        await redisClient.connect();
+        console.log("Conectado a Redis...");
+    } catch (err) {
+        console.error("Error conectando a Redis:", err);
+    }
 };
 
 module.exports = { connectToRedis, redisClient };

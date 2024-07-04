@@ -14,6 +14,7 @@ let user;
 
 const fetchUserCallBack = (data) => {
     user = data;
+    user.token = data.token; 
 
     socket.emit('user-connected', user);
     
@@ -29,7 +30,46 @@ const fetchUserCallBack = (data) => {
     console.log(user);
 }
 
-fetchData('/api/user-info', fetchUserCallBack);
+async function renewToken() {
+    try {
+      const response = await fetch('/api/renew-token', {
+        method: 'GET',
+        credentials: 'include', // Incluir cookies
+      });
+  
+      if (response.ok) {
+        const { token } = await response.json();
+        // Actualizar el token en el cliente
+        user.token = token;
+      } else {
+        // Manejar el error de token expirado
+        console.error('Error renovando el token:', response.status);
+        // Redirigir al usuario a la página de inicio de sesión o realizar otra acción
+      }
+    } catch (error) {
+      console.error('Error al renovar el token:', error);
+    }
+  }
+
+setInterval(renewToken, 300000);
+
+url = '/api/user-info';
+
+async function fetchData(url, fetchUserCallBack) {
+try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}` // Enviar el token en la solicitud
+      },
+      credentials: 'include' // Incluir cookies
+    });
+
+    // ...
+  } catch (error) {
+    console.error('Error al hacer la solicitud:', error);
+  }
+}
 
 socket.on("receive-number-of-rooms-and-users", (numberOfRooms, totalR, totalU) => {
     beginnerRooms.innerText = '${numberOfRooms[0]} rooms'

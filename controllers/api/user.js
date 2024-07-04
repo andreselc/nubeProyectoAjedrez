@@ -53,7 +53,7 @@ exports.register = async (req, res) => {
         throw err;
       }
 
-      // Guardar el token en Redis (opcional)
+      // Guardar el token en Redis
       //await redisClient.set(`token:${newUser.id}`, token, 'EX', 3600);
 
       // Configurar las cookies
@@ -158,24 +158,67 @@ exports.login = async (req, res) => {
 
 exports.getInfo = async (req, res) => {
   try {
-    jwt.verify(req.cookies.token, jwtSecret, (err, userPayload) => {
-      if(err) throw err;
+    const token = req.cookies.token;
 
-      const {id, email, username} = userPayload
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
 
-      let user = {
-        id,
-        username,
-        email,
-        user_rank: req.cookies.user_rank,
-        user_points: req.cookies.user_points
+    // Verificar si el token está presente en Redis
+    const redisToken = await redisClient.get(`token:${req.user.id}`);
+    if (!redisToken) {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+
+    if (redisToken !== token) {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+
+    // Si el token es válido, verificar la información del usuario
+    const userInfo = await userRepository.findUserInfoByUserId(req.user.id);
+
+    if (!userInfo) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    return res.json(userInfo);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.renewToken = async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    // Verificar si el token está presente en Redis
+    const redisToken = await redisClient.get(`token:${req.user.id}`);
+    if (!redisToken) {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+
+    if (redisToken !== token) {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+
+    jwt.verify(token, jwtSecret, (err, userPayload) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          // Eliminar el token expirado de Redis
+          redisClient.del(`token:${req.user.id}`);
+          return res.status(401).json({ error: "Token expired" });
+        }
+        throw err; 
       }
 
-      return res.json(user);
-    })
+      // ...
+    });
   } catch (err) {
-    console.log(err)
-    res.status(500).json({error: err.message});
+    console.log(err);
+    res.status(500).json({ error: err.message });
   }
-}
-
+};
