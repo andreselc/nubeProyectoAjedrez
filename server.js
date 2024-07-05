@@ -101,6 +101,36 @@ const main = async () => {
             })
         })
 
+        socket.on("join-room", (roomId, user, password=null) => {
+            redisClient.get(roomId, (err, reply) => {
+                if(err) throw err;
+
+                if(reply){
+                    let room = JSON.parse(reply);
+
+                    if(room.players[1] === null){
+                        if(room.password && (!password || room.password !== password)){
+                            socket.emit("error", "Para ingresar a la sala necesitas colocar la contraseña correcta")
+
+                            return
+                        }
+
+                        joinRoom(roomId, user);
+
+                        if(room.password && password !== ""){
+                            socket.emit("room-joined", roomId, password);
+                        }else{
+                            socket.emit("room-joined", roomId);
+                        }
+                    }else{
+                        socket.emit("error", "La sala está llena")
+                    }
+                }else{
+                    socket.emit("error", `La sala con id '${roomId}' no existe`)
+                }
+            })
+        })
+
         socket.on('get-rooms', (rank) => {
             redisClient.get("rooms", (err, reply) => {
                 if(err) throw err;

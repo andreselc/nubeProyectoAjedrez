@@ -5,7 +5,7 @@ const gamesList = document.getElementById("games-list");
 const noGamesMessage = document.getElementById("no-games-message");
 
 const createRoomBtn = document.getElementById("create-room");
-const joinRoomBtn = document.getElementById("join-room");
+const joinRandomBtn = document.getElementById("join-room");
 
 const createRoomFormContainer = document.getElementById("create-room-form-container");
 const createRoomForm = document.getElementById("create-room-form");
@@ -56,13 +56,23 @@ const handleCreateRoomFormSubmit = e => {
     createRoomFormContainer.classList.add("hidden")
 }
 
+const handleJoinRoomFormSubmit = e => {
+    e.preventDefault();
+
+    if(roomId){
+        const password = roomPasswordJoin.value;
+
+        socket.emit('join-room', gameId, user, password)
+    }
+}
+
 const addJoinButtonListeners = () => {
     document.querySelectorAll(".game button").forEach(button => {
         if(!button.classList.contains("disabled")){
             button.addEventListener("click", e => {
                 let game = button.parentNode;
 
-                if(game.dateset.withpassword === 'true'){
+                if(game.dataset.withpassword === 'true'){
                     gameId = game.id;
                     joinRoomFormContainer.classList.remove('hidden');
                 }else{
@@ -114,7 +124,31 @@ socket.on('receive-rooms', rooms => {
 })
 
 socket.on("room-created", () => {
-    console.log("Sala Creada")
+    let id = roomId.value;
+
+    if(addPassword.cheked && roomPassword.value !== ""){
+        window.location.href = window.location.origin + "/room?id=" + id + "&ppassword=" + roomPassword.value;
+    }else{
+        window.location.href = window.location.origin + "/room?id=" + id
+    }
+})
+
+socket.on("room-joined", (id, password=null) => {
+    if(password){
+        window.location.href = window.location.origin + "/room?id" + id + "&password=" + roomPassword.value;
+    }else{
+        window.location.href = window.location.origin + "/room?id" + id
+    }
+})
+
+addPassword.addEventListener("change", () => {
+    if(addPassword.checked){
+        roomPassword.readOnly = false;
+        passwordInputGroup.classList.remove("disabled")
+    }else{
+        roomPassword.readOnly = true;
+        passwordInputGroup.classList.add("disabled")
+    }
 })
 
 rankFilter.addEventListener("change", (e) => {
@@ -130,3 +164,9 @@ closeCreateRoomFormBtn.addEventListener("clicl", () => {
 })
 
 createRoomForm.addEventListener("submit", handleCreateRoomFormSubmit)
+
+closeJoinRoomFormBtn.addEventListener("clicl", () => {
+    joinRoomFormContainer.classList.add("hidden")
+})
+
+joinRoomForm.addEventListener("submit", handleJoinRoomFormSubmit)
