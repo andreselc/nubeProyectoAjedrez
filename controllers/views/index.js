@@ -3,7 +3,7 @@ exports.getRegisterPage = (req, res) => {
         return res.redirect("/");
     }
 
-    res.render('auth/register');
+    res.render('auth/register', {authorized: false});
 };
 
 exports.getLoginPage = (req, res) => {
@@ -11,7 +11,7 @@ exports.getLoginPage = (req, res) => {
         return res.redirect("/");
     }
 
-    res.render('auth/login');
+    res.render('auth/login', {authorized: false});
 };
 
 exports.getLobbyPage = (req, res) => {
@@ -19,7 +19,7 @@ exports.getLobbyPage = (req, res) => {
         return res.redirect("/login");
     }
 
-    res.render("lobby");
+    res.render("lobby", {authorized: false});
 };
 
 exports.getGamesPage = (req, res) => {
@@ -27,5 +27,5 @@ exports.getGamesPage = (req, res) => {
         return res.redirect("/login");
     }
 
-    res.render("games");
+    res.render("games", {authorized: false});
 };
