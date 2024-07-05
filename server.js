@@ -47,7 +47,7 @@ const main = async () => {
     const io = socketIO(server);
 
     io.on("connection", (socket) => {
-        socket.on('user-connected', async (user, roomId = null) => {
+        socket.on('user-connected', async (user, roomId=null) => {
             if (roomId) {
                 // TODO: Ingresar a sala con el ID
             } else {
@@ -82,7 +82,7 @@ const main = async () => {
             }
         });
 
-        socket.on("send-message", (message, user, roomId = null) => {
+        socket.on("send-message", (message, user, roomId=null) => {
             if (roomId) {
                 socket.to(roomId).emit("receive-message", message, user);
             } else {

@@ -72,12 +72,11 @@ try {
 }
 
 socket.on("receive-number-of-rooms-and-users", (numberOfRooms, totalR, totalU) => {
-    beginnerRooms.innerText = '${numberOfRooms[0]} rooms'
-    intermediateRooms.innerText = '${numberOfRooms[1]} rooms'
-    advancedRooms.innerText = '${numberOfRooms[2]} rooms'
-    expertRooms.innerText = '${numberOfRooms[3]} rooms';
+    beginnerRooms.innerText = `${numberOfRooms[0]} rooms`;
+    intermediateRooms.innerText = `${numberOfRooms[1]} rooms`;
+    advancedRooms.innerText = `${numberOfRooms[2]} rooms`;
+    expertRooms.innerText = `${numberOfRooms[3]} rooms`;
 
-    totalRooms.innerText = 'Total Rooms: ${totalR}'
-    totalUsers.innerText = 'Total Users: ${totalU}'
+    totalRooms.innerText = `Total Rooms: ${totalR}`;
+    totalUsers.innerText = `Total Rooms: ${totalU}`;
 })
-

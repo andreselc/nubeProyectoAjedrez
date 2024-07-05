@@ -18,7 +18,7 @@ const displayMessage = message => {
 
         </li>
     `;
-}
+};
 
 const handleSubmit = (e) => {
     e.preventDefault();
