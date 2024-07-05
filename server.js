@@ -6,7 +6,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const cookieParser = require("cookie-parser");
 const { connectToRedis, redisClient } = require("./config/redis");
-const { createTestingRooms } = require("./util/room");
+const { createTestingRooms, removeRoom } = require("./util/room");
 
 const main = async () => {
     const viewsRoutes = require("./routes/views");
@@ -131,6 +131,27 @@ const main = async () => {
             })
         })
 
+        socket.on("join-random", (user) => {
+            redisClient.get("rooms", (err, reply) => {
+                if(err) throw err;
+
+                if(reply){
+                    let rooms = JSON.parse(reply)
+
+                    let room = rooms.find(room => room.players[1] === null && !room.password);
+
+                    if(room){
+                        joinRoom(room.id, user);
+                        socket.emit("room-joined", room.id);
+                    }else{
+                        socket.emit("error", "No se encotntro la sala")
+                    }
+                }else{
+                    socket.emit("error", "No se encontro la sala")
+                }
+            })
+        })
+
         socket.on('get-rooms', (rank) => {
             redisClient.get("rooms", (err, reply) => {
                 if(err) throw err;
@@ -168,7 +189,19 @@ const main = async () => {
                     let user = JSON.parse(reply);
 
                     if (user.room) {
-                        // TODO:
+                        redisClient.get(user.room, (err, reply) => {
+                            if(err) throw err;
+
+                            if(reply){
+                                let room = JSON.parse(reply);
+
+                                if(!room.gameFinished){
+                                    io.to(user.room).emit("error", "El otro jugador abandonó la partida")
+                                }
+                            }
+                        })
+
+                        removeRoom(user.room, user.user_rank);
                     }
                 }
                 await removeUser(socketId);
