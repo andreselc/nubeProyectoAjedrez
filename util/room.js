@@ -177,15 +177,4 @@ const removeRoom = (roomId, userRank) => {
     })
 }
 
-const createTestingRooms = () => {
-    const user ={username: 'testuser', user_rank: 'beginner', use_points: 1000, room: 'room1'}
-    const user2 ={username: 'testuser2', user_rank: 'expert', use_points: 1000, room: 'room2'}
-
-    createRoom('room1', user, 0);
-    
-    setTimeout(() => {
-        createRoom('room2', user2, 0, 'password');
-    }, 3000)
-}
-
-module.exports = {createRoom, joinRoom, removeRoom, createTestingRooms}
+module.exports = {createRoom, joinRoom, removeRoom}

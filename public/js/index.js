@@ -12,3 +12,8 @@ const fetchData = (url, callback) => {
     .then(callback)
     .catch(err => console.log(err.message))
 }
+
+// FIXME: Creo que el https aqui deberia ser 3000
+socket.on("error", (errorMessage) => {
+    window.location.href = "http://localhost:5000/games?error=" + errorMessage
+})

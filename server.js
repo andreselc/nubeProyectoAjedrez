@@ -83,8 +83,25 @@ const main = async () => {
             }
         });
 
+        socket.on("create-room", (roomId, time, user, password=null) => {
+            redisClient.get(roomId, (err, reply) => {
+                if(err) throw err;
+
+                if(reply){
+                    socket.emit("error", `La sala con el id '${roomId}' ya existe`)
+                }else{
+                    if(password){
+                        createRoom(roomId, user, time, password)
+                    }else{
+                        createRoom(roomId, user, time)
+                    }
+
+                    socket.emit("room-created")
+                }
+            })
+        })
+
         socket.on('get-rooms', (rank) => {
-            createTestingRooms()
             redisClient.get("rooms", (err, reply) => {
                 if(err) throw err;
 
@@ -98,8 +115,6 @@ const main = async () => {
 
                         socket.emit("receive-rooms", filteredRooms);
                     }
-
-
                 }else{
                     socket.emit("receive-rooms", [])
                 }
