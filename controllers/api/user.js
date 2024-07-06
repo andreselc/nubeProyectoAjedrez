@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const db = require('../../config/db');
 const userRepository = require('../../repositories/userRepository');
 const { validationResult } = require('express-validator');
 const redisClient = require("../../config/redis");
@@ -54,7 +55,7 @@ exports.register = async (req, res) => {
       }
 
       // Guardar el token en Redis
-      //await redisClient.set(`token:${newUser.id}`, token, 'EX', 3600);
+      redisClient.set(`token:${newUser.id}`, token, 'EX', 3600);
 
       // Configurar las cookies
       res.cookie("token", token, {
@@ -123,9 +124,9 @@ exports.login = async (req, res) => {
       if (err) {
         throw err;
       }
-
+      
       // Guardar el token en Redis (opcional)
-      //await redisClient.set(`token:${user.id}`, token, 'EX', 3600);
+      redisClient.set(`token:${user.id}`, token, 'EX', 3600);
 
       // Configurar las cookies
       res.cookie("token", token, {
@@ -156,69 +157,29 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getInfo = async (req, res) => {
+exports.getInfo = (req, res) => {
   try {
-    const token = req.cookies.token;
-
-    if (!token) {
-      return res.status(401).json({ error: "No token provided" });
-    }
-
-    // Verificar si el token está presente en Redis
-    const redisToken = await redisClient.get(`token:${req.user.id}`);
-    if (!redisToken) {
-      return res.status(401).json({ error: "Token inválido" });
-    }
-
-    if (redisToken !== token) {
-      return res.status(401).json({ error: "Token inválido" });
-    }
-
-    // Si el token es válido, verificar la información del usuario
-    const userInfo = await userRepository.findUserInfoByUserId(req.user.id);
-
-    if (!userInfo) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-
-    return res.json(userInfo);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.renewToken = async (req, res) => {
-  try {
-    const { token } = req.cookies;
-    if (!token) {
-      return res.status(401).json({ error: "No token provided" });
-    }
-
-    // Verificar si el token está presente en Redis
-    const redisToken = await redisClient.get(`token:${req.user.id}`);
-    if (!redisToken) {
-      return res.status(401).json({ error: "Token inválido" });
-    }
-
-    if (redisToken !== token) {
-      return res.status(401).json({ error: "Token inválido" });
-    }
-
-    jwt.verify(token, jwtSecret, (err, userPayload) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          // Eliminar el token expirado de Redis
-          redisClient.del(`token:${req.user.id}`);
-          return res.status(401).json({ error: "Token expired" });
-        }
-        throw err; 
+    jwt.verify(req.cookies.token, jwtSecret, (err, userPayload) => {
+      if (err) 
+        throw err;
+      
+      const { id, email, username } = userPayload;
+      
+      let user = {
+        id, 
+        username,
+        email,
+        user_rank: req.cookies.user_rank,
+        user_points: req.cookies.user_points
       }
 
-      // ...
+      return res.json(user);
     });
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: err.message });
   }
+
 };
+

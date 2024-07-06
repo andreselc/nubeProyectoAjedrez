@@ -22,6 +22,4 @@ router.post("/login", [
 // Ruta para obtener información del usuario
 router.get("/user-info", getInfo);
 
-router.get("/renew-token", renewToken);
-
 module.exports = router;
