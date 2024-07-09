@@ -1,38 +1,43 @@
-const { redisClient } = require("../config/redis");
+const redisClient = require("../config/redis");
 
-const newUser = async (socketId, user, roomId) => {
+const newUser = (socketId, user, roomId) => {
     if (roomId) {
         user.room = roomId;
     }
 
-    await redisClient.set(socketId, JSON.stringify(user));
+    redisClient.set(socketId, JSON.stringify(user));
 
-    const totalUsersReply = await redisClient.get('total-users');
-    if (totalUsersReply) {
-        let totalUsers = parseInt(totalUsersReply);
+    redisClient.get('total-users', (err, reply) => {
+        if (err) {
+            throw err;
+        }
 
-        totalUsers += 1;
-        await redisClient.set('total-users', totalUsers.toString());
-    } else {
-        await redisClient.set('total-users', '1');
-    }
+        if (reply) {
+            let totalUsers = parseInt(reply);
+            totalUsers += 1;
+            redisClient.set('total-users', totalUsers + "");
+        } else {
+            redisClient.set('total-users', '1');
+        }
+    });
 }
 
-const removeUser = async (socketId) => {
-    await redisClient.del(socketId); 
-    const totalUsersReply = await redisClient.get('total-users');
+const removeUser = (socketId) => {
+    redisClient.del(socketId);
+    redisClient.get('total-users', (err, reply) => {
+        if (err) throw err;
 
-    if (totalUsersReply) {
-        let totalUsers = parseInt(totalUsersReply);
+        if (reply) {
+            let totalUsers = parseInt(reply);
+            totalUsers -= 1;
 
-        totalUsers -= 1;
-
-        if (totalUsers === 0) {
-            await redisClient.del('total-users');
-        } else {
-            await redisClient.set('total-users', totalUsers.toString());
+            if (totalUsers === 0) {
+                redisClient.del("total-users");
+            } else {
+                redisClient.set("total-users", totalUsers + "");
+            }
         }
-    }
+    });
 }
 
 module.exports = { newUser, removeUser };

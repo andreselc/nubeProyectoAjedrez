@@ -19,7 +19,7 @@ exports.getLobbyPage = (req, res) => {
         return res.redirect("/login");
     }
 
-    res.render("lobby", {authorized: false});
+    res.render("lobby", {authorized: true});
 };
 
 exports.getGamesPage = (req, res) => {
@@ -27,5 +27,14 @@ exports.getGamesPage = (req, res) => {
         return res.redirect("/login");
     }
 
-    res.render("games", {authorized: false});
+    res.render("games", {authorized: true});
 };
+
+exports.getRoomPage = (req, res) => {
+    if(!req.cookies.token){
+        return res.redirect("/login");
+    }
+
+    res.render("room", {authorized: true});
+
+}
