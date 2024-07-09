@@ -126,13 +126,13 @@ socket.on('receive-rooms', rooms => {
 socket.on("room-created", () => {
     let id = roomId.value;
 
-    if(addPassword.cheked && roomPassword.value !== ""){
+    if(addPassword.checked && roomPassword.value !== ""){
         window.location.href = window.location.origin + "/room?id=" + id + "&ppassword=" + roomPassword.value;
     }else{
         window.location.href = window.location.origin + "/room?id=" + id
     }
 })
-ß
+
 socket.on("room-joined", (id, password=null) => {
     if(password){
         window.location.href = window.location.origin + "/room?id" + id + "&password=" + roomPassword.value;

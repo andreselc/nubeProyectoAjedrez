@@ -7,25 +7,25 @@
 
     <div class="games hidden" id="games">
         <div class="games-top">
-            <h1>Games</h1>
+            <h1>Juegos</h1>
 
             <select id="filter">
                 <option value="all">All</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-                <option value="expert">Expert</option>
+                <option value="beginner">Principiante</option>
+                <option value="intermediate">Intermedio</option>
+                <option value="advanced">Avanzado</option>
+                <option value="expert">Experto</option>
             </select>
         </div>
 
-        <p class="hidden" id="no-games-message">No Games Found</p>
+        <p class="hidden" id="no-games-message">No se encontraron juegos</p>
 
         <ul class="games-list hidden" id="games-list"></ul>
 
         <div class="games-bottom">
-            <button id="create-room">Create Room</button>
+            <button id="create-room">Crear Sala</button>
 
-            <button id="join-random">Join Room</button>
+            <button id="join-random">Ingresar a Sala</button>
         </div>
     </div>
 </div>
@@ -33,32 +33,32 @@
 <div class="fixed-element-container form-container hidden" id="create-room-form-container">
     <form id="create-room-form">
         <div class="input-group">
-            <label>Room ID</label>
-            <input type="text" placehoder="Ingresa el ID de la Sala..." id="room-id" required> 
+            <label>ID de la Sala</label>
+            <input type="text" placeholder="Ingresa el ID de la Sala..." id="room-id" required> 
         </div>
 
         <div class="input-group">
-            <label>Game Time</label>
+            <label>Tiempo de Juego</label>
             <select id="game-time">
-                <option value="0">No Time</option>
-                <option value="1">15 Minutes</option>
-                <option value="2">30 Minutes</option>
-                <option value="3">45 Minutes</option>
-                <option value="4">60 Minutes</option>
+                <option value="0">Sin tiempo</option>
+                <option value="1">15 Minutos</option>
+                <option value="2">30 Minutos</option>
+                <option value="3">45 Minutos</option>
+                <option value="4">60 Minutos</option>
             </select>
         </div>
 
         <div class="input-group input-group-checkbox">
-            <label>Add Password</label>
+            <label>Agrega una Contraseña</label>
             <input type="checkbox" id="add-password">
         </div>
 
         <div class="input-group disabled" id="password-input-group">
-            <label>Pasword</label>
-            <input type="password" placeholder="Enter a password..." id="romm-password" required>
+            <label>Contraseña</label>
+            <input type="password" placeholder="Ingresa la Contraseña..." id="room-password" required>
         </div>
 
-        <button type="submit">Create</button>
+        <button type="submit">Crear</button>
 
         <span class="close-form" id="close-create-form">
             &#x2715;
@@ -70,11 +70,11 @@
 <div class="fixed-element-container form-container hidden" id="join-room-form-container">
     <form id="join-room-form">
         <div class="input-group">
-            <label>Room Password</label>
-            <input type="password" placehoder="Ingresa la contraseña..." id="room-password-join" required>
+            <label>Contraseña de la Sala</label>
+            <input type="password" placeholder="Ingresa la contraseña..." id="room-password-join" required>
         </div>
 
-        <button type="submit">Join</button>
+        <button type="submit">Ingresar</button>
 
         <span class="close-form" id="close-join-form">
             &#x2715;
