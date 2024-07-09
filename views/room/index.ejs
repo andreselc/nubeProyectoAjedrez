@@ -2,6 +2,8 @@
 
 <div class="container"> 
 
+    <%- include('../include/partials/spinner') %>
+
     <div class="game-room" id="game-room">
         <div class="board-and-users">
             <div class="user" id ="player-light">
@@ -99,4 +101,15 @@
 
 </div>
 
+
+<%- include('../include/partials/chat') %>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/index.js"></script>
+<script src="js/spinner.js"></script>
+<script src="js/room/chessBoard.js"></script>
+
+<script src="js/room/index.js"></script>
+<script src="js/chat.js"></script>
+   
 <%- include('../include/footer') %>
