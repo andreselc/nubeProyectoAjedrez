@@ -132,7 +132,7 @@ socket.on("room-created", () => {
         window.location.href = window.location.origin + "/room?id=" + id
     }
 })
-
+ß
 socket.on("room-joined", (id, password=null) => {
     if(password){
         window.location.href = window.location.origin + "/room?id" + id + "&password=" + roomPassword.value;
@@ -159,13 +159,13 @@ createRoomBtn.addEventListener("click", () => {
     createRoomFormContainer.classList.remove("hidden")
 })
 
-closeCreateRoomFormBtn.addEventListener("clicl", () => {
+closeCreateRoomFormBtn.addEventListener("click", () => {
     createRoomFormContainer.classList.add("hidden")
 })
 
 createRoomForm.addEventListener("submit", handleCreateRoomFormSubmit)
 
-closeJoinRoomFormBtn.addEventListener("clicl", () => {
+closeJoinRoomFormBtn.addEventListener("click", () => {
     joinRoomFormContainer.classList.add("hidden")
 })
 
