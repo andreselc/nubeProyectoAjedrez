@@ -105,12 +105,12 @@ io.on("connection", (socket) => {
                 }
         }
     )
-        } else {
+       } else {
             newUser(socket.id, user);
         }
     });
 
-    socket.on("get-game-details", (roomId, user) => {
+   socket.on("get-game-details", (roomId, user) => {
         redisClient.get(roomId, (err, reply) => {
             if (err) throw err;
 
