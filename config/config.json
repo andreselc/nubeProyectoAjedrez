@@ -15,10 +15,12 @@
   },
   "production": {
     "username": "postgres",
-    "password":  "210302",
+    "password": "210302",
     "database": "nubeAjedrez",
-    "host":"db",
+    "host": "db",
     "port": 5432,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "REDIS_HOST": "redis",
+    "REDIS_PORT": 6379
   }
 }

@@ -1,0 +1,95 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: app
+  annotations:
+    description: Plantilla de despliegue de ajedrez
+
+parameters:
+  - name: APP_NAME
+    description: Nombre de la aplicación.
+    required: true
+
+  - name: WEB_SERVER_DOMAIN
+    description: Nombre de dominio para las rutas.
+    required: true
+
+  - name: IMAGE_TAG
+    description: Tag a desplegar.
+    required: true
+
+  - name: SERVER_MEMORY_LIMIT
+    value: "128Mi"
+
+  - name: SERVER_MEMORY_REQUEST
+    value: "128Mi"
+
+labels:
+  app: "${APP_NAME}"
+
+objects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}"
+    spec:
+      ports:
+        - name: app-port
+          port: 8000
+          protocol: TCP
+          targetPort: 8000
+      selector:
+        app: "${APP_NAME}"
+
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: "${APP_NAME}-route"
+    spec:
+      host: "${WEB_SERVER_DOMAIN}"
+      path: "/"
+      port:
+        targetPort: app-port
+      to:
+        kind: Service
+        name: "${APP_NAME}"
+
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}"
+    spec:
+      replicas: 1
+      selector:
+        app: "${APP_NAME}"
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}"
+        spec:
+          containers:
+            - name: "${APP_NAME}"
+              image: 'nubeproyecto-app' 
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 8000
+                  protocol: TCP
+              resources:
+                limits:
+                  memory: "${SERVER_MEMORY_LIMIT}"
+                requests:
+                  memory: "${SERVER_MEMORY_REQUEST}"
+          restartPolicy: Always
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            from:
+              kind: ImageStreamTag
+              name: "${APP_NAME}:${IMAGE_TAG}"
+            containerNames:
+              - "${APP_NAME}"
+      test: false
