@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_app
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "
+      npm run migrate &&
+      npm start
+      "
+    volumes:
+      - ./.env:/app/.env # Montar el archivo .env dentro del contenedor
+    restart: always
+
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      start_period: 10s
+    restart: always
+
+  redis:
+    image: redis
+    container_name: redis_server
+    ports:
+      - '6379:6379'
+    restart: always
+
+volumes:
+  pgdata:

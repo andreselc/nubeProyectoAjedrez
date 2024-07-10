@@ -14,10 +14,11 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "postgres",
+    "password":  "210302",
+    "database": "nubeAjedrez",
+    "host":"db",
+    "port": 5432,
     "dialect": "postgres"
   }
 }
