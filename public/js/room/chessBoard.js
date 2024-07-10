@@ -2,8 +2,13 @@
 //Constante (Valores Iniciales para el juego)
 //-------------------------------------
 
-let player = null;
+const xAxis = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const yAxis = [1, 2, 3, 4, 5, 6, 7, 8];
+
+let player = "light";
 let enemy = null;
+
+let selectedPiece = null;
 
 const lightPieces = [
     {
@@ -222,3 +227,77 @@ const blackPieces = [
         
     },
 ]
+
+const getPawnPossibleMoves = (xAxisPos, yAxisPos, xAxisIndex, yAxisIndex) => {
+    let possibleMoves = [];
+    let forwardMoves = 1;
+
+    let yAxisIndexForCapture = null;
+    let canMoveForward = false;
+
+    if (player === "light"){
+       if(yAxisPos === 7){
+           forwardMoves = 2;
+       }
+
+       yAxisIndexForCapture = yAxisIndex -1
+       canMoveForward=yAxisIndex>0
+
+       for (let y = yAxisIndex -1; y >= yAxisIndex - forwardMoves; y--){
+           if (y < 0){
+               break;
+           }
+
+           let box = document.getElementById(`${xAxisPos}-${yAxis[y]}`);
+
+           if(box.childElementCount === 0) {
+            possibleMoves.push(box);
+           }else{
+               break;
+           }
+       }
+    } else {
+        if(yAxisPos === 2){
+            forwardMoves = 2;
+        }
+ 
+        yAxisIndexForCapture = yAxisIndex +1
+        canMoveForward=yAxisIndex>0
+ 
+        for (let y = yAxisIndex + 1; y >= yAxisIndex + forwardMoves; y++){
+            if (y > yAxis.length){
+                break; 
+            }
+ 
+            let box = document.getElementById(`${xAxisPos}-${yAxis[y]}`);
+ 
+            if(box.childElementCount === 0) {
+             possibleMoves.push(box);
+            }else{
+                break;
+            }
+        }
+
+    }
+
+    if (canMoveForward){
+        
+        if(xAxisIndex>0){
+            let pieceToCaptureLeft = document.getElementById(`${xAxis[xAxisIndex-1]}-${yAxis[yAxisIndexForCapture]}`);
+            if (pieceToCaptureLeft.childElementCount > 0  && pieceToCaptureLeft.children[0].classList.contains(enemy) ){
+                possibleMoves.push(pieceToCaptureLeft);
+            }
+        }
+
+         
+        if(xAxisIndex < xAxis.length -1 ){
+            let pieceToCaptureRight = document.getElementById(`${xAxis[xAxisIndex+1]}-${yAxis[yAxisIndexForCapture]}`);
+            if (pieceToCaptureRight.childElementCount > 0  && pieceToCaptureRight.children[0].classList.contains(enemy) ){
+                possibleMoves.push(pieceToCaptureRight);
+            }
+        }
+
+    }
+
+    return possibleMoves
+}

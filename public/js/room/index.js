@@ -65,6 +65,7 @@ const fetchUsersCallback = (data) => {
 
 fetchUsersCallback("/api/user-info", fetchUsersCallback);
 
+//Mostrar la lógica de la tabla de ajedrez
 const displayChessPieces = () => {
     boxes.forEach(box => {
         box.innerHTML = '';
@@ -89,7 +90,63 @@ const displayChessPieces = () => {
             </div>`
     })
 
+    addPiecesListeners();
 }
+
+const onClickPiece = (e) => {
+    if(!myTurn || gameOver){	
+        return;
+    }
+
+    // hidePossibleMoves();
+
+    let element = e.target.closest('.piece');
+    let position = element.parentElement.id;
+    let piece = element.dataset.piece;
+
+    if (selectedPiece && selectedPiece.piece === piece && selectedPiece.position === position){
+        selectedPiece = null;
+        return;
+    }
+
+    selectedPiece = {position, piece}
+
+    let possibleMoves = findPossibleMoves(position,piece);
+
+    console.log(possibleMoves);
+}
+
+const addPiecesListeners = () => {
+    document.querySelectorAll(`.piece.${player}`).forEach(piece => {
+       piece.addEventListener('click', onClickPiece)
+    })
+
+    document.querySelectorAll(`.piece.${enemy}`).forEach(piece => {
+        piece.style.cursor = "default"
+    })
+}
+
+//-------------------------------------------------------
+
+//Lógica de los posibles movimientos
+const findPossibleMoves = (position, piece) => {
+    let splittedPos = position.split('-');
+    let yAxisPos = +splittedPos[1]
+    let xAxis = splittedPos[0]
+    let yAxisIndex = yAxis.findIndex(y => y === yAxisPos);
+    let xAxisIndex = xAxis.findIndex(x => x === xAxisPos);
+
+    switch(piece){
+        case "pawn":
+            return getPawnPossibleMoves(xAxisPos, yAxisPos, xAxisIndex, yAxisIndex);
+        default:
+            return [];
+    }
+}
+
+
+//-------------------------------------------------------
+
 
 const updateTimer = () => {}
 
