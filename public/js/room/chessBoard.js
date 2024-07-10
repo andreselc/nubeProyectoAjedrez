@@ -2,6 +2,8 @@
 //Constante (Valores Iniciales para el juego)
 //-------------------------------------
 
+let player = null;
+let enemy = null;
 
 const lightPieces = [
     {

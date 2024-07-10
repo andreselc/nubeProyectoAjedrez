@@ -52,11 +52,75 @@ const io = socketIO(server);
 io.on("connection", (socket) => {
     socket.on('user-connected', (user, roomId = null) => {
         if (roomId) {
-            // TODO: Ingresar a sala con el ID
+            redisClient.get(roomId, (err, reply) => {
+                if (err) throw err;
+
+                if (reply) {
+                    let room = JSON.parse(reply);
+
+                    if (room.gameStarted) {
+                        socket.emit("error", "The room is full")
+                        return;
+
+                    }
+
+                    if (room.password && (!password || room.password !== password)) {
+                        socket.emit("error", "You need to enter the correct password to join the room")
+                        return;
+                    }
+                    
+                    socket.join(roomId);
+                    newUser(socket.id, user, roomId);
+
+                    if(room.players[0].username === user.username){
+                        return;
+                    }  
+                    
+                    if(room.players[1] === null){
+                        room.players[1] = user;    
+                    }
+
+                    room.gameStarted = true;
+                    redisClient.set(roomId, JSON.stringify(room));
+                    socket.to(roomId).emit("game-started")
+
+                    
+                    redisClient.get("roomIndices", (err, reply) => {
+                        
+                        if (err) throw err;
+
+                        if (reply){
+                            let roomIndices = JSON.parse(reply);
+                            redisClient.get("rooms", (err, reply) => {
+                                if (reply){
+                                    let rooms = JSON.parse(reply);
+
+                                    rooms[roomIndices[roomId]] = room;
+                                    redisClient.set("rooms", JSON.stringify(rooms))
+                                }
+                            })
+                        }
+                    })
+                
+                }
+        }
+    )
         } else {
             newUser(socket.id, user);
         }
     });
+
+    socket.on("get-game-details", (roomId, user) => {
+        redisClient.get(roomId, (err, reply) => {
+            if (err) throw err;
+
+            if(reply){
+                let room = JSON.parse(reply);
+                let details = {players: room.players, time: room.time}
+                socket.emit("receive-game-details", details)
+            }
+        })
+    })
 
     socket.on('send-total-rooms-and-users', () => {
         try {
