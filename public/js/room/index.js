@@ -1,10 +1,26 @@
 //-------------------------------------
+//DOM Elements
+//-------------------------------------
+const room = document.getElementById('room');
+const boxes = document.querySelectorAll('box');
+const playerLight = document.getElementById('player-light');
+const playerBlack = document.getElementById('player-black');
+const waitingMessage = document.getElementById('waiting-message');
+const playerLightTimer = playerLight.querySelector('.timer');
+const playerBlackTimer = playerBlack.querySelector('.timer');
+const lightCapturePieces = document.getElementById('light-capture-pieces');
+const blackCapturePieces = document.getElementById('black-capture-pieces');
+//const piecesToRemove = document.querySelectorAll('.piece-to-remove');
+
+
+
+//-------------------------------------
 //Variables de juego
 //-------------------------------------
 
 let user = null;
 
-let search = window.location.split('&');
+let search = window.location.search.split('&');
 
 let roomId = null;
 let password = null;
@@ -49,3 +65,30 @@ const fetchUsersCallback = (data) => {
 
 fetchUsersCallback("/api/user-info", fetchUsersCallback);
 
+const displayChessPieces = () => {
+    boxes.forEach(box => {
+        box.innerHTML = '';
+    }
+    )
+
+    lightPieces.forEach(piece => {
+        let box = document.getElementById(piece.position);
+
+        box.innerHTML += 
+        `<div class="piece light  data-piece="${piece.piece}" data-points="${piece.points}">
+            <img src="${piece.icon}" alt="${piece.piece}">
+            </div>`
+    })
+
+    blackPieces.forEach(piece => {
+        let box = document.getElementById(piece.position);
+
+        box.innerHTML += 
+        `<div class="piece light  data-piece="${piece.piece}" data-points="${piece.points}">
+            <img src="${piece.icon}" alt="${piece.piece}">
+            </div>`
+    })
+
+}
+
+displayChessPieces();
