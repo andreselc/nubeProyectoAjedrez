@@ -9,6 +9,7 @@ const redisClient = require('./config/redis');
 const viewsRoutes = require("./routes/views");
 const userRoutes = require("./routes/api/user");
 const { removeRoom } = require("./util/room");
+const { createRoom, joinRoom } = require("./util/room");
 const { newUser, removeUser } = require("./util/user");
 
 dotenv.config();

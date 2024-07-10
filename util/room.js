@@ -11,7 +11,7 @@ const redisClient = require("../config/redis");
     }
 */
 
-let numberOfRoomIndices = {
+let numberOfIndices = {
     'beginner': 0,
     'intermediate': 1,
     'advanced': 2,
